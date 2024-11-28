@@ -1,0 +1,47 @@
+coinpaprika_global = {
+    'market_cap_usd': 3418079025340,
+    'volume_24h_usd': 394846007313,
+    'bitcoin_dominance_percentage': 55.22,
+    'cryptocurrencies_number': 10414,
+    'market_cap_ath_value': 4201069158677,
+    'market_cap_ath_date': '2024-11-21T06:15:00Z',
+    'volume_24h_ath_value': 16460384024873,
+    'volume_24h_ath_date': '2022-12-03T07:55:00Z',
+    'volume_24h_percent_from_ath': -97.6,
+    'volume_24h_percent_to_ath': 4068.81,
+    'market_cap_change_24h': 2.76,
+    'volume_24h_change_24h': -6.78,
+    'last_updated': 1732782240
+}
+coinpaprika_tickers_btc = {
+    "id": "btc-bitcoin",
+    "name": "Bitcoin",
+    "symbol": "BTC",
+    "rank": 1,
+    "total_supply": 19788466,
+    "max_supply": 21000000,
+    "beta_value": 0.961272,
+    "first_data_at": "2010-07-17T00:00:00Z",
+    "last_updated": "2024-11-28T08:31:35Z",
+    "quotes": {
+        "USD": {
+            "price": 95515.52682968136,
+            "volume_24h": 79544013332.74623,
+            "volume_24h_change_24h": -9.81,
+            "market_cap": 1890105755141,
+            "market_cap_change_24h": 2.37,
+            "percent_change_15m": 0.2,
+            "percent_change_30m": 0.2,
+            "percent_change_1h": -0.05,
+            "percent_change_6h": -0.63,
+            "percent_change_12h": -1.2,
+            "percent_change_24h": 2.37,
+            "percent_change_7d": -2.01,
+            "percent_change_30d": 31.93,
+            "percent_change_1y": 152.03,
+            "ath_price": 99649.56804294256,
+            "ath_date": "2024-11-22T19:39:21Z",
+            "percent_from_price_ath": -4.21,
+        }
+    },
+}
