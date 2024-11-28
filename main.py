@@ -10,14 +10,14 @@ import pandas as pd
 class ApiVisualize(ABC):
 
     def performApiWorkflow(self) -> None:
-        """api_url = self.getApiUrl()
+        api_url = self.getApiUrl()
 
         # Process Api Response
         res = rq.get(api_url)
         if res.status_code!=200:
             print(f"Error: Something didnt work when requesting at {api_url}.")
-            exit()"""
-        content = coinpaprika_btc_history
+            exit()
+        content = res.json()
         print(content)
 
         data = self.processContent(content)
@@ -40,12 +40,12 @@ class ApiVisualize(ABC):
 class CryptoVisualize(ApiVisualize):
 
     def getApiUrl(self):
-        return 'https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2024-07-01&interval=7d'
+        return 'https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2024-07-01&interval=1d'
 
     def processContent(self, content):
         df = pd.DataFrame(dict(
-                time=list(map(lambda object: object["timestamp"], content)),
-                price=list(map(lambda object: object["price"], content)),
+                time=self.dictListToValueList(content, "timestamp"),
+                price=self.dictListToValueList(content, "price"),
             )
         )
         return df
@@ -64,6 +64,14 @@ class CryptoVisualize(ApiVisualize):
         )
         fig.show()
         return True
+
+    def dictListToValueList(self, dictList: list[dict], key: str):
+        valueList: list = []
+        for dictionary in dictList:
+            value = dictionary[key]
+            valueList.append(value)
+        return valueList
+
 
 
 cv = CryptoVisualize()
