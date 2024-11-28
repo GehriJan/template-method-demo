@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 import requests as rq
 from sample_responses import *
 import matplotlib.pyplot as plt
+import plotly.express as px
+from plotly.subplots import make_subplots
+import pandas as pd
 
 
 class ApiVisualize(ABC):
@@ -14,7 +17,8 @@ class ApiVisualize(ABC):
         if res.status_code!=200:
             print(f"Error: Something didnt work when requesting at {api_url}.")
             exit()"""
-        content = coinpaprika_tickers_btc
+        content = coinpaprika_btc_history
+        print(content)
 
         data = self.processContent(content)
         self.visualizeContent(data)
@@ -36,65 +40,29 @@ class ApiVisualize(ABC):
 class CryptoVisualize(ApiVisualize):
 
     def getApiUrl(self):
-        return "https://api.coinpaprika.com/v1/tickers/btc-bitcoin"
+        return 'https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2024-07-01&interval=7d'
 
     def processContent(self, content):
-        data = {
-            "name": content["name"],
-            "symbol": content["symbol"],
-            "date": content["last_updated"],
-            "beta_value": content["beta_value"],
-            "price": content["quotes"]["USD"]["price"],
-            "price": content["quotes"]["USD"]["price"],
-            "percent_changes": [
-                list(
-                    map(
-                        lambda number: number-15,
-                        [15, 30, 1*60, 6*60, 12*60, 24*60, 7*24*60, 30*24*60, 365*24*60]
-                    )
-                ),
-                reversed([
-                    content["quotes"]["USD"]["percent_change_15m"],
-                    content["quotes"]["USD"]["percent_change_30m"],
-                    content["quotes"]["USD"]["percent_change_1h"],
-                    content["quotes"]["USD"]["percent_change_6h"],
-                    content["quotes"]["USD"]["percent_change_12h"],
-                    content["quotes"]["USD"]["percent_change_24h"],
-                    content["quotes"]["USD"]["percent_change_7d"],
-                    content["quotes"]["USD"]["percent_change_30d"],
-                    content["quotes"]["USD"]["percent_change_1y"],
-                ])
-            ]
+        df = pd.DataFrame(dict(
+                time=list(map(lambda object: object["timestamp"], content)),
+                price=list(map(lambda object: object["price"], content)),
+            )
+        )
+        return df
 
-        }
-
-        return data
     def visualizeContent(self, data):
-        fig, axs = plt.subplots(2)
-        axs[0].text(
-            0.5,
-            0.9,
-            f"{data["name"]} ({data["symbol"]}) data",
-            fontdict={
-                "weight": "bold",
-                "size": 40
-            },
-            horizontalalignment='center',
-            verticalalignment='center',
+        fig = px.line(
+            data,
+            x="time",
+            y="price",
+            title="Price of Bitcoin from July 2024 to now",
         )
-        axs[0].text(
-            0.5,
-            0.85,
-            f"from {data["date"]}",
-            fontdict={
-                "weight": "semibold",
-                "size": 20
-            },
-            horizontalalignment='center',
-            verticalalignment='center',
+        fig.update_layout(
+            title_font =dict(
+                size=30,
+            )
         )
-        plt.suptitle(f"{data["name"]} ({data["symbol"]}) data")
-        plt.show()
+        fig.show()
         return True
 
 
