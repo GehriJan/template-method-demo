@@ -90,7 +90,6 @@ class DogVisualize(ApiVisualize):
         image.show()
         return True
 
-
 cv = DogVisualize()
 
 cv.performApiWorkflow()
