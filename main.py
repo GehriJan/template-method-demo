@@ -1,7 +1,10 @@
+from io import BytesIO
 from abc import ABC, abstractmethod
+from PIL import Image
 import requests as rq
 from sample_responses import *
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import plotly.express as px
 from plotly.subplots import make_subplots
 import pandas as pd
@@ -29,7 +32,7 @@ class ApiVisualize(ABC):
         pass
 
     @abstractmethod
-    def processContent(self, res):
+    def processContent(self, content):
         pass
 
     @abstractmethod
@@ -72,8 +75,22 @@ class CryptoVisualize(ApiVisualize):
             valueList.append(value)
         return valueList
 
+class DogVisualize(ApiVisualize):
+
+    def getApiUrl(self):
+        return "https://dog.ceo/api/breeds/image/random"
+
+    def processContent(self, content):
+        picture_url = content["message"]
+        data = rq.get(picture_url).content
+        return data
+
+    def visualizeContent(self, data):
+        image = Image.open(BytesIO(data))
+        image.show()
+        return True
 
 
-cv = CryptoVisualize()
+cv = DogVisualize()
 
 cv.performApiWorkflow()
