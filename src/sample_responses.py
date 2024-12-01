@@ -955,3 +955,4 @@ coinpaprika_btc_history = [
     },
 ]
 
+regions =

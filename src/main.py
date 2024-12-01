@@ -90,6 +90,18 @@ class DogVisualize(ApiVisualize):
         image.show()
         return True
 
-cv = DogVisualize()
+class PinballVisualize(ApiVisualize):
+   def getApiUrl(self):
+        return "https://api.deutschland-api.dev/autobahn"
+
+    def processContent(self, content):
+        autobahns: list = []
+        for autobahn in content["entries"]:
+            url = 
+            res = rq.get()
+
+
+        return
+cv = CryptoVisualize()
 
 cv.performApiWorkflow()
