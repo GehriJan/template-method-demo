@@ -954,5 +954,3 @@ coinpaprika_btc_history = [
         "market_cap": 1891203499214,
     },
 ]
-
-regions =

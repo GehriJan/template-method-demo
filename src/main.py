@@ -90,18 +90,62 @@ class DogVisualize(ApiVisualize):
         image.show()
         return True
 
-class PinballVisualize(ApiVisualize):
-   def getApiUrl(self):
+class GeoVisualize(ApiVisualize):
+    def getApiUrl(self):
         return "https://api.deutschland-api.dev/autobahn"
 
     def processContent(self, content):
-        autobahns: list = []
-        for autobahn in content["entries"]:
-            url = 
-            res = rq.get()
-
-
+        all_autobahns_lorries_pd: pd.DataFrame = pd.DataFrame()
+        for autobahn in content["entries"][5:10]:
+            url = f"https://api.deutschland-api.dev/autobahn/{autobahn}/parking_lorry?field"
+            res = rq.get(url)
+            if res.status_code!=200:
+                print(f"Error: Something didnt work when requesting at {url}.")
+                exit()
+            autobahn_lorries_pd = res.json()["entries"]
+            autobahn_lorries_pd = pd.json_normalize(autobahn_lorries_pd)
+            autobahn_lorries_pd[["Autobahn", "city"]] = autobahn_lorries_pd["title"].str.split(" \| ", n=1, expand=True)
+            autobahn_lorries_pd = autobahn_lorries_pd.drop(columns=["title","id"])
+            all_autobahns_lorries_pd = pd.concat([all_autobahns_lorries_pd, autobahn_lorries_pd])
+        print(all_autobahns_lorries_pd)
+        print(all_autobahns_lorries_pd.columns)
+        return all_autobahns_lorries_pd
+    def visualizeContent(self, data):
+        fig = px.scatter_geo(
+            data,
+            lat="coordinate.lat",
+            lon="coordinate.long",
+            hover_name="subtitle",
+            color="Autobahn",
+            center={
+                "lat": 50.6085868697721,
+                "lon": 9.032501742251238,
+            },
+            scope="europe",
+            hover_data={
+                "subtitle": False,
+                "description": True,
+                "Autobahn": True,
+                "coordinate.lat": False,
+                "coordinate.long": False,
+                "city": True,
+            }
+        )
+        fig.update_geos(
+            resolution = 50,
+            projection = {
+                "scale": 5,
+            },
+            showcountries = True,
+            showlakes = True,
+            showland = True,
+            showocean = True,
+            showrivers = True,
+            showsubunits = True,
+            showcoastlines = True,
+        )
+        fig.show()
         return
-cv = CryptoVisualize()
+cv = GeoVisualize()
 
 cv.performApiWorkflow()
