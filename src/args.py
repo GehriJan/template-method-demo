@@ -1,5 +1,6 @@
 import argparse
 from model import *
+
 keyToClass = {
     "crypto": CryptoVisualize,
     "dog": DogVisualize,
@@ -10,7 +11,6 @@ def getOptions():
     parser = argparse.ArgumentParser()
     arguments = [
         ["-c", "--class", True, str],
-        ["-s", "--useStored", False, bool],
     ]
     for argument in arguments:
         parser.add_argument(
@@ -24,7 +24,6 @@ def getOptions():
     argsDict = vars(args)
     selectedClassKey = argsDict["class"][0]
     selectedClass = keyToClass[selectedClassKey]
-    useStored = argsDict["useStored"][0]
 
-    return selectedClass, useStored
+    return selectedClass
 

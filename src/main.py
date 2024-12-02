@@ -1,7 +1,7 @@
 from model import *
 from args import getOptions
 
-selectedClass, useStored = getOptions()
+selectedClass = getOptions()
 
 sampleObject = selectedClass()
 

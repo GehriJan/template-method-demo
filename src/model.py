@@ -12,9 +12,8 @@ import pandas as pd
 
 class ApiVisualize(ABC):
 
-    def performApiWorkflow(self) -> None:
+    def showMeStuff(self) -> None:
         api_url = self.getApiUrl()
-
         # Process Api Response
         res = rq.get(api_url)
         if res.status_code!=200:
