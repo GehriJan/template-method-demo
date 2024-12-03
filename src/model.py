@@ -2,7 +2,6 @@ from io import BytesIO
 from abc import ABC, abstractmethod
 from PIL import Image
 import requests as rq
-from sample_responses import *
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import plotly.express as px
