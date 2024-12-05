@@ -3,6 +3,6 @@ from args import getOptions
 
 selectedClass = getOptions()
 
-sampleObject = selectedClass()
+sampleObject: ApiVisualize = selectedClass()
 
-sampleObject.performApiWorkflow()
+sampleObject.showMeStuff()
