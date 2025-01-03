@@ -1,51 +1,49 @@
 import pytest
+import pandas as pd
 import requests as rq
 import validators
+from tests_sample_data import crypto_sample_data, dog_sample_data, autobahn_sample_data
 from model import ApiVisualize, CryptoVisualize, DogVisualize, AutobahnVisualize
 
-"""
-@pytest.fixture
-def create_class_object(visualization_class):
-    return visualization_class()
-
-
-def test_get_api_url(visualization_class):
-    output = create_class_object(visualization_class).getApiUrl()
-    assert type(output) == str
-    assert validators.url(output) == True
-
-
-visualization_classes = [CryptoVisualize, DogVisualize, AutobahnVisualize]
-tests = [test_get_api_url]
-
-for visualization_class in visualization_classes:
-    for test in tests:
-        test_get_api_url(visualization_class)
-"""
-
-
-@pytest.fixture
-def get_object():
-    return CryptoVisualize()
 
 @pytest.mark.parametrize(
-    "visualization_class",
+    "visualization_class, sample_data",
     [
-        CryptoVisualize,
-        DogVisualize,
-        AutobahnVisualize,
+        (CryptoVisualize, crypto_sample_data),
+        (DogVisualize, dog_sample_data),
+        (AutobahnVisualize, autobahn_sample_data),
     ],
 )
-def test_get_api_url(visualization_class):
-    object = visualization_class()
-    api_url = object.getApiUrl()
+def test_get_api_url(visualization_class, sample_data):
+    # Arrange
+    visualization_object: ApiVisualize = visualization_class()
+    # Act
+    api_url = visualization_object.getApiUrl()
+    # Assert
     assert type(api_url) == str
     assert validators.url(api_url)
 
-def test_process_content(visualization_class):
-    object = visualization_class()
-    api_url = object.getApiUrl()
+
+def test_api_response(visualization_class, sample_data):
+    # Arrange
+    visualization_object: ApiVisualize = visualization_class()
+    visualization_object: ApiVisualize = visualization_class()
+    api_url = visualization_object.getApiUrl()
+    # Act
     res = rq.get(api_url)
-    content = res.json()
+    # Assert
+    assert res.status_code == 200
+    assert res.text != ""
+
+
+def test_data_processing(visualization_class, sample_data):
+    # Arrange
+    visualization_object: ApiVisualize = visualization_class()
+    # Act
+    processed_data = visualization_object.processContent(sample_data)
+    # Assert
+    assert processed_data != None
+    assert type(processed_data) in [pd.DataFrame, bytes]
+
 
 # TODO: tests für andere funktionen weiter schreiben
