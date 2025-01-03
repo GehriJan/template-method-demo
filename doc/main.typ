@@ -32,7 +32,6 @@
 
 #outline(depth: 2)
 
-= Introduction
 == Motivation
 
 = The Template Method Design Pattern
