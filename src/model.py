@@ -15,6 +15,7 @@ class ApiVisualize(ABC):
             print(f"Error: Something didnt work when requesting at {api_url}.")
             exit()
         content = res.json()
+        print(content)
         data = self.processContent(content)
         self.visualizeContent(data)
         return
