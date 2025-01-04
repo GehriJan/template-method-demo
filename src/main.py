@@ -5,4 +5,4 @@ selectedClass = getOptions()
 
 sampleObject: ApiVisualize = selectedClass()
 
-sampleObject.showMeStuff()
+sampleObject.show_me_stuff()

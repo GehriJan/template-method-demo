@@ -4,48 +4,70 @@ from PIL import Image
 import requests as rq
 import plotly.express as px
 import pandas as pd
+import sys
+# from pathlib import Path
+# sys.path.append(str(Path().resolve()) + "/tests")
+# from model_test_sample_data import *
 
 
 class ApiVisualize(ABC):
-    def showMeStuff(self) -> None:
-        api_url = self.getApiUrl()
+    """
+    Abstract super class, containing the template method (show_me_stuff) and the following sub-functions:
+        - required abstract methods (get_api_url, visualize_content)
+        - optional methods (process_content)
+        - hook methods (print_report)
+    """
+
+    # Template Method
+    def show_me_stuff(self) -> None:
+        api_url = self.get_api_url()
+
         # Process Api Response
         res = rq.get(api_url)
         if res.status_code != 200:
             print(f"Error: Something didnt work when requesting at {api_url}.")
             exit()
         content = res.json()
-        print(content)
-        data = self.processContent(content)
-        self.visualizeContent(data)
+
+        data = self.process_content(content)
+        self.print_report(data)
+        self.visualize_content(data)
         return
 
+    # abstract steps that require a sub-class implementation
     @abstractmethod
-    def getApiUrl(self) -> str:
+    def get_api_url(self) -> str:
         pass
 
-    def processContent(self, content):
+    @abstractmethod
+    def visualize_content(self, data) -> None:
+        pass
+
+    # optional step, default doesnt change data
+    def process_content(self, content):
         return content
 
-    @abstractmethod
-    def visualizeContent(self, data) -> None:
+    # hook method; optional sub-class implementation, otherwise pass
+    def print_report(self, data):
         pass
 
-
 class CryptoVisualize(ApiVisualize):
-    def getApiUrl(self) -> str:
+    """
+    Example of visualizing the price of bitcoin over a given time period as a line chart.
+    """
+    def get_api_url(self) -> str:
         return "https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2024-07-01&interval=1d"
 
-    def processContent(self, content):
+    def process_content(self, content):
         df = pd.DataFrame(
             dict(
-                time=self.dictListToValueList(content, "timestamp"),
-                price=self.dictListToValueList(content, "price"),
+                time=self.dict_list_to_value_list(content, "timestamp"),
+                price=self.dict_list_to_value_list(content, "price"),
             )
         )
         return df
 
-    def visualizeContent(self, data) -> None:
+    def visualize_content(self, data) -> None:
         fig = px.line(
             data,
             x="time",
@@ -60,7 +82,31 @@ class CryptoVisualize(ApiVisualize):
         fig.show()
         return
 
-    def dictListToValueList(self, dictList: list[dict], key: str):
+    def print_report(self, df):
+        price_stats = df["price"].describe()
+        date_stats = (
+            pd.to_datetime(df["time"])
+            .dt.floor("D")
+            .describe()
+        )
+        metrics = {
+            "Number of data points": price_stats["count"],
+            "Price stats": None,
+            "\tMinimum": price_stats.loc["min"],
+            "\tMaximum": price_stats.loc["max"],
+            "\tMean": price_stats.loc["mean"],
+            "\tStd": price_stats.loc["std"],
+            "Date stats": None,
+            "\tEarliest date": date_stats.loc["min"],
+            "\tLatest date": date_stats.loc["max"],
+        }
+        print("-----------------------")
+        print("Report for crypto data:")
+        for text, value in metrics.items():
+            print(f"{text}: {f'{value: .2f}' if value is not None else ""}")
+        print("-----------------------")
+
+    def dict_list_to_value_list(self, dictList: list[dict], key: str):
         valueList: list = []
         for dictionary in dictList:
             value = dictionary[key]
@@ -69,25 +115,31 @@ class CryptoVisualize(ApiVisualize):
 
 
 class DogVisualize(ApiVisualize):
-    def getApiUrl(self):
+    """
+    Example of displaying a random dog picture.
+    """
+    def get_api_url(self):
         return "https://dog.ceo/api/breeds/image/random"
 
-    def processContent(self, content):
+    def process_content(self, content):
         picture_url = content["message"]
         data = rq.get(picture_url).content
         return data
 
-    def visualizeContent(self, data):
+    def visualize_content(self, data):
         image = Image.open(BytesIO(data))
         image.show()
         return
 
 
 class AutobahnVisualize(ApiVisualize):
-    def getApiUrl(self):
+    """
+    Example of visualizing different Autobahn-lorries and colorcoding them according to their corresponding Autobahn.
+    """
+    def get_api_url(self):
         return "https://api.deutschland-api.dev/autobahn"
 
-    def processContent(self, content):
+    def process_content(self, content):
         all_autobahns_lorries_pd: pd.DataFrame = pd.DataFrame()
         for autobahn in content["entries"][:10]:
             url = f"https://api.deutschland-api.dev/autobahn/{autobahn}/parking_lorry?field"
@@ -106,7 +158,7 @@ class AutobahnVisualize(ApiVisualize):
             )
         return all_autobahns_lorries_pd
 
-    def visualizeContent(self, data):
+    def visualize_content(self, data):
         fig = px.scatter_geo(
             data,
             lat="coordinate.lat",
