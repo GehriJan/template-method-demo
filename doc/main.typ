@@ -45,7 +45,7 @@ With the #acrf("TMDP"), the algorithm is divided into several abstract steps,
 which are called in the _#acr("TM")_.
 This method implements the solution to the problem on a high level,
 allowing the different, specific step implementations to deal with the differing contexts.
-The steps are aggregated in an abstract class.
+The steps as well as the #acr("TMDP") are aggregated in an abstract class.
 
 When the _#acr("TM")_ is to be applied to a new context, a sub-class of the abstract class is created.
 Then, at minimum all required functions declared in the abstract class have to be implemented, before the #acr("TM") can be performed for the new class.
@@ -56,7 +56,7 @@ Then, at minimum all required functions declared in the abstract class have to b
 In general, there are three types of abstract steps:
 
 1. *Required abstract steps*\
-  These steps are defined as abstract methods in the abstract class. Therefore, they have to be implemented by every concrete class, otherwise the template method cannot be performed.
+  These steps are defined as abstract methods in the abstract class. Therefore, they have to be implemented by every concrete class, otherwise the #acr("TM") cannot be performed.
 2. *Optional abstract steps*\
   For these steps, a default implementation exists in the abstract class. Therefore, they do not have to be implemented by the concrete class but can be if the context requires so.
   This can be useful when steps are _exactly_ the same for multiple contexts.
@@ -65,7 +65,7 @@ In general, there are three types of abstract steps:
 
 == Class diagram
 The following class diagram displays the different classes and the different types of abstract steps.
-Whilst the functions `required_step1` and `required_step2` are implemented by every concrete classes, `optional_step` and `hook_method` are only implemented by some of the concrete classes.
+Whilst the functions `required_step1` and `required_step2` are implemented by every concrete classes, `optional_step` and `hook_method` are only implemented by some of them.
 
 #figure(
   image("assets/template-pattern-class-diagram.drawio.png"),
@@ -89,11 +89,12 @@ Whilst the functions `required_step1` and `required_step2` are implemented by ev
 For showcasing #acr("TMDP"), a context had to be chosen which fits the situation of similar algorithms with differing concrete implementations. The implemented application, in short, fetches, processes and displays data of differing source and contexts. The different contexts are presented subsequently:
 
 1. *`CryptoVisualize` - Price of Bitcoin*\
-  The price of the wide-spread crypto currency Bitcoin is retrieved for every day since the first of July 2024. The data is then being transformed and visualized as a plotly-line-chart.
+  The price of the wide-spread crypto currency Bitcoin is retrieved for every day since the first of July 2024. The data is then being transformed and visualized as a plotly line-chart.
 2. *`DogVisualize` - Picture of Dog*\
   A random picture of a dog is being fetched and displayed.
 3. *`AutobahnVisualize` - German Highway lorries*\
-  Informations regarding different lorries of the notorious german highways ('Autobahn') are fetched. Then, the lorries are displayed on a plotly-map chart. They are color-coded according to the highway they belong to, which allows the retracing of individual highways
+  Informations regarding different lorries of the notorious german highways ('Autobahn') are fetched.
+  Then, the lorries are displayed on a plotly map-chart. They are color-coded according to the highway they belong to, which allows the retracing of individual highways.
 
 == Usage
 
@@ -130,6 +131,36 @@ Example outputs with their corresponding commands are presented subsequently.
   image("assets/example_autobahn.png"),
   caption: [Command: ```sh python3 src/main.py -c autobahn```]
 )
+
+== The template method
+In python, a class is declared as abstract by inheriting from the ```ABC``` class of the ```abc``` module.\
+The structure of the #acr("TM") allows the explanation of the different types of abstract steps in the example:
+#figure(
+  ```python
+    # Template Method
+    def show_me_stuff(self) -> None:
+        api_url = self.get_api_url()
+        content = self.api_requests(api_url)
+        data = self.process_content(content)
+        self.print_report(data)
+        self.visualize_data(data)
+        return
+  ```,
+  caption: [The example #acr("TM").]
+)
+```get_api_url``` and ```visualize_data``` are different for every class and are therefore implemented as abstract methods.
+Of course, a really basic implementation of the methods could be implemented in general, retrieving data from a sample API and visualizing it. The abstract methods are better, because they suggest to the developer that without a concrete implementation of those classes, there is no sense in using the #acr("TM").
+In python, this can be implemented by a decorator and an empty body:
+#figure(
+  ```python
+    @abstractmethod
+    def get_api_url(self) -> str:
+        pass
+  ```,
+)
+```api_requests``` and ```process_content``` have default implementations.
+For ```api_requests```, it is just performing one api request and returning the content.
+For ```process_content```, it is returning the input.
 
 == Class diagram
 //class diagram

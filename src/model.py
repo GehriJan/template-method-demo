@@ -21,17 +21,10 @@ class ApiVisualize(ABC):
     # Template Method
     def show_me_stuff(self) -> None:
         api_url = self.get_api_url()
-
-        # Process Api Response
-        res = rq.get(api_url)
-        if res.status_code != 200:
-            print(f"Error: Something didnt work when requesting at {api_url}.")
-            exit()
-        content = res.json()
-
+        content = self.api_requests(api_url)
         data = self.process_content(content)
         self.print_report(data)
-        self.visualize_content(data)
+        self.visualize_data(data)
         return
 
     # abstract steps that require a sub-class implementation
@@ -40,11 +33,19 @@ class ApiVisualize(ABC):
         pass
 
     @abstractmethod
-    def visualize_content(self, data) -> None:
+    def visualize_data(self, data) -> None:
         pass
 
-    # optional step, default doesnt change data
+    # default implementations with optional overwrites
     def process_content(self, content):
+        return content
+
+    def api_requests(self, api_url):
+        res = rq.get(api_url)
+        if res.status_code != 200:
+            print(f"Error: Something didnt work when requesting at {api_url}.")
+            exit()
+        content = res.json()
         return content
 
     # hook method; optional sub-class implementation, otherwise pass
@@ -67,7 +68,7 @@ class CryptoVisualize(ApiVisualize):
         )
         return df
 
-    def visualize_content(self, data) -> None:
+    def visualize_data(self, data) -> None:
         fig = px.line(
             data,
             x="time",
@@ -126,7 +127,7 @@ class DogVisualize(ApiVisualize):
         data = rq.get(picture_url).content
         return data
 
-    def visualize_content(self, data):
+    def visualize_data(self, data):
         image = Image.open(BytesIO(data))
         image.show()
         return
@@ -140,25 +141,30 @@ class AutobahnVisualize(ApiVisualize):
         return "https://api.deutschland-api.dev/autobahn"
 
     def process_content(self, content):
-        all_autobahns_lorries_pd: pd.DataFrame = pd.DataFrame()
-        for autobahn in content["entries"][:10]:
-            url = f"https://api.deutschland-api.dev/autobahn/{autobahn}/parking_lorry?field"
+        all_autobahns_lorries_df: pd.DataFrame = pd.DataFrame()
+        for highway in content:
+            highway_df = pd.json_normalize(highway)
+            all_autobahns_lorries_df = pd.concat([all_autobahns_lorries_df, highway_df], axis=0)
+        all_autobahns_lorries_df[["Autobahn", "city"]] = all_autobahns_lorries_df[
+            "title"
+        ].str.split(" \| ", n=1, expand=True)
+        all_autobahns_lorries_df = all_autobahns_lorries_df.drop(columns=["title", "id"])
+        return all_autobahns_lorries_df
+
+    def api_requests(self, api_url):
+        content_highways = super().api_requests(api_url)
+        all_lorries = []
+        for highway in content_highways["entries"][:10]:
+            url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry?field"
             res = rq.get(url)
             if res.status_code != 200:
                 print(f"Error: Something didnt work when requesting at {url}.")
-                exit()
-            autobahn_lorries_pd = res.json()["entries"]
-            autobahn_lorries_pd = pd.json_normalize(autobahn_lorries_pd)
-            autobahn_lorries_pd[["Autobahn", "city"]] = autobahn_lorries_pd[
-                "title"
-            ].str.split(" \| ", n=1, expand=True)
-            autobahn_lorries_pd = autobahn_lorries_pd.drop(columns=["title", "id"])
-            all_autobahns_lorries_pd = pd.concat(
-                [all_autobahns_lorries_pd, autobahn_lorries_pd]
-            )
-        return all_autobahns_lorries_pd
+                continue
+            lorries = res.json()["entries"]
+            all_lorries.append(lorries)
+        return all_lorries
 
-    def visualize_content(self, data):
+    def visualize_data(self, data):
         fig = px.scatter_geo(
             data,
             lat="coordinate.lat",
