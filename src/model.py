@@ -156,11 +156,7 @@ class AutobahnVisualize(ApiVisualize):
         all_lorries = []
         for highway in content_highways["entries"][:10]:
             url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry?field"
-            res = rq.get(url)
-            if res.status_code != 200:
-                print(f"Error: Something didnt work when requesting at {url}.")
-                continue
-            lorries = res.json()["entries"]
+            lorries = super().api_requests(url)["entries"]
             all_lorries.append(lorries)
         return all_lorries
 
