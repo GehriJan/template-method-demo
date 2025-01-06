@@ -1,17 +1,15 @@
 import pytest
-import shutil
 import pandas as pd
 import requests as rq
 import validators
 from test_sample_data import crypto_sample_data, dog_sample_data, autobahn_sample_data
 
-
-import os
 import sys
 from pathlib import Path
 sys.path.append(str(Path().resolve()) + "/src")
 from model import ApiVisualize, CryptoVisualize, DogVisualize, AutobahnVisualize
 
+# Parameters for testing
 pytestmark = pytest.mark.parametrize(
     "visualization_class,sample_data",
     [

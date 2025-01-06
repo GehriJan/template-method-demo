@@ -48,27 +48,27 @@ How can we structure code to manage such recurring problems effectively? The sol
 = The #acrf("TMDP")
 
 With the #acrf("TMDP"), the algorithm is divided into several abstract steps,
-which are called in sequence in the _Template Method_.
+which are called in sequence in the _template method_.
 This method implements the solution to the problem on a high level,
 allowing the different, specific step implementations to deal with the differing contexts.
-The steps as well as the Template Method are aggregated in an abstract class.
+The steps as well as the template method are aggregated in an abstract class.
 
-When the Template Method is to be applied to a new context, a sub-class of the abstract class is created.
-Then, at minimum all required functions declared in the abstract class have to be implemented, before the Template Method can be performed for the new class.
+When the template method is to be applied to a new context, a sub-class of the abstract class is created.
+Then, at minimum all required functions declared in the abstract class have to be implemented, before the template method can be performed for the new class.
 
 
 == Different types of abstract steps
 
-In general, there are three types of abstract steps in the Template Method:
+
+One differentiates between different types of methods in the template method. The number of different types of methods and the naming varies (@wikipedia and @McDonough2017 count 2, @refactoring_guru and @cooper2000java 3), but the underlying concepts of _abstraction_ and _default implementation_. We count three types of abstract steps in the template method [@refactoring_guru]:
 
 1. *Required abstract steps*\
-  These steps are defined as abstract methods in the abstract class. Therefore, they have to be implemented by every concrete class, otherwise the Template Method cannot be performed.
+  These steps are defined as abstract methods in the abstract class. Therefore, they have to be implemented by every concrete class, otherwise the template method cannot be performed.
 2. *Optional abstract steps*\
   For these steps, a default implementation exists in the abstract class. Therefore, they do not have to be implemented by the concrete class but can be if the context requires so.
   This can be useful when steps are _exactly_ the same for multiple contexts.
 3. *Hook methods*\
-  For these steps, no implementation is given in the abstract class, but they are not abstract classes either. Instead, they can be implemented in concrete classes for them to _hook into_ the Template Method. One example would be the allowance of logging in between of different steps of the Template Method.
-
+  For these steps, no implementation is given in the abstract class, but they are not abstract classes either. Instead, they can be implemented in concrete classes for them to _hook into_ the template method. One example would be the allowance of logging in between of different steps of the Template Method.
 
 == Class diagram
 
@@ -159,12 +159,12 @@ They can be found in `tests/test.py` and run by
 .
 
 == The #acr("TMDP") in the example
-=== Template Method
+=== template method
 
-The Template Method implements the basic fetch-process-visualize algorithm:
+The template method implements the basic fetch-process-visualize algorithm:
 #figure(
   ```python
-    # Template Method
+    # template method
     def show_me_stuff(self) -> None:
         api_url = self.get_api_url()
         content = self.api_requests(api_url)
@@ -173,7 +173,7 @@ The Template Method implements the basic fetch-process-visualize algorithm:
         self.visualize_data(data)
         return
   ```,
-  caption: [The example Template Method.]
+  caption: [The example template method.]
 )
 
 === Required abstract steps
@@ -240,17 +240,17 @@ The implementation of `api_requests` in `AutobahnVisualize` is to be highlighted
 = Real-World examples
 
 1. *Testing Frameworks (JUnit)*\
-   JUnit uses Template Method principles to enforce a structured flow in test execution. Methods such as `setUp()` and `tearDown()` serve as hooks, while `executeTest()` is a required step for specific test logic.
+   JUnit uses template method principles to enforce a structured flow in test execution. Methods such as `setUp()` and `tearDown()` serve as hooks, while `executeTest()` is a required step for specific test logic.
 
 2. *Game Development (Unreal Engine)*\
-   In Unreal Engine, the `Actor` class exemplifies the Template Method pattern. Hooks such as `BeginPlay()` and `Tick()` allow developers to inject custom logic while adhering to the engine's game loop.
+   In Unreal Engine, the `Actor` class exemplifies the template method pattern. Hooks such as `BeginPlay()` and `Tick()` allow developers to inject custom logic while adhering to the engine's game loop.
 
 3. *Oatmeal Preparation (Non-programming)*\
-   @McDonough2017 provides an analogy of oatmeal preparation, illustrating how a fixed sequence of steps (gather ingredients, prepare, cook, and serve) can have flexibility in implementation depending on factors like the type of oatmeal and the cooking method (e.g., stovetop or microwave). This mirrors the Template Method's ability to define an overarching structure while allowing subclasses to handle details [@McDonough2017, pp. 247-251].
+   @McDonough2017 provides an analogy of oatmeal preparation, illustrating how a fixed sequence of steps (gather ingredients, prepare, cook, and serve) can have flexibility in implementation depending on factors like the type of oatmeal and the cooking method (e.g., stovetop or microwave). This mirrors the template method's ability to define an overarching structure while allowing subclasses to handle details [@McDonough2017, pp. 247-251].
 
-= Pro/Con of Template Method
+= Pro/Con of template method
 
-The Template Method pattern offers both benefits and drawbacks:
+The template method pattern offers both benefits and drawbacks:
 
 == *Advantages*
 - *Reusability*\
@@ -272,14 +272,14 @@ The Template Method pattern offers both benefits and drawbacks:
 
 = Differentiation to Other Patterns
 
-While the Template Method shares similarities with other design patterns, its unique characteristics set it apart:
+While the template method shares similarities with other design patterns, its unique characteristics set it apart:
 
 1. *Strategy Pattern*\
-   The Strategy pattern encapsulates algorithms as interchangeable objects, offering runtime flexibility. In contrast, the Template Method fixes the algorithm's structure at compile time, delegating specific steps to subclasses [@McDonough2017, pp. 250-251].
+   The Strategy pattern encapsulates algorithms as interchangeable objects, offering runtime flexibility. In contrast, the template method fixes the algorithm's structure at compile time, delegating specific steps to subclasses [@McDonough2017, pp. 250-251].
 
 2. *Factory Method*\
-   Both patterns rely on abstract methods, but their goals differ: the Factory Method creates objects, while the Template Method defines an algorithmic workflow [@McDonough2017, pp. 249-250].
+   Both patterns rely on abstract methods, but their goals differ: the Factory Method creates objects, while the template method defines an algorithmic workflow [@McDonough2017, pp. 249-250].
 
 = Outlook
 
-While the Template Method remains a robust tool for algorithm design, its reliance on inheritance may be less favored in modern design paradigms emphasizing composition and functional programming [@McDonough2017, pp. 253-254]. Nonetheless, its ability to enforce structure in repetitive workflows ensures its continued relevance in certain contexts.
+While the template method remains a robust tool for algorithm design, its reliance on inheritance may be less favored in modern design paradigms emphasizing composition and functional programming [@McDonough2017, pp. 253-254]. Nonetheless, its ability to enforce structure in repetitive workflows ensures its continued relevance in certain contexts.
