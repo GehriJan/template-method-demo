@@ -12,22 +12,26 @@
 #show: ieee.with(
   title: [Software Design Pattern: Template Method],
   abstract: [
-    #lorem(100)
+    Oftentimes in modern software projects, the same procedure has to be performed in differing contexts.
+    Considering every context by using control structures makes the code less readable, maintainable and scalable.
+    #acr("TMDP") solves this problem by introducing an abstract class which contains the template method, a high-level algorithm solving the problem on a general level. The different parts of the algorithm are implemented for the different context, ensuring flexibility _and_ scalability.
+    To showcase #acr("TMDP"), we implemented a Python program with an abstract class and 3 concrete classes. All of them implement a fetch-process-visualize procedure.
+    At last, we elaborate on advantages and disadvantages of #acr("TMDP") and refer to related software design patterns.
   ],
   authors: (
-    (
-      name: "Anton Seitz",
-      department: [INF22B],
-      organization: [DHBW],
-      location: [Stuttgart, Germany],
-      email: "inf22052@lehre.dhbw-stuttgart.de"
-    ),
     (
       name: "Jannis Gehring",
       department: [INF22B],
       organization: [DHBW],
       location: [Stuttgart, Germany],
       email: "inf22115@lehre.dhbw-stuttgart.de"
+    ),
+    (
+      name: "Anton Seitz",
+      department: [INF22B],
+      organization: [DHBW],
+      location: [Stuttgart, Germany],
+      email: "inf22052@lehre.dhbw-stuttgart.de"
     ),
   ),
   bibliography: bibliography("refs.bib"),
@@ -103,7 +107,7 @@ For showcasing #acr("TMDP"), a context had to be chosen which fits the situation
   Then, the lorries are displayed on a plotly map-chart. They are color-coded according to the highway they belong to, which allows the retracing of individual highways.
 
 == Project Setup
-For implementing #acr("TMDP") we used the programming language Python. Python is easy to read and allows to focus on the main concepts of this demonstration. The module `abc` (Abstract Base Classes) provides the necessary classes/decorators for implementing #acr("TMDP").
+For implementing #acr("TMDP") we used the programming language Python (version 3.13.0). Python is easy to read and allows to focus on the main concepts of this demonstration. The module `abc` (Abstract Base Classes) provides the necessary classes/decorators for implementing #acr("TMDP").
 The project is structured in three folders:
 - `src` contains the source code for the #acr("TMDP"). `model.py` implements the class structure, including the concrete classes. `args.py` deals with the command-line arguments and `main.py` brings both together to a working program
 - `tests` contains the tests
@@ -225,7 +229,7 @@ The implementation of `api_requests` in `AutobahnVisualize` is to be highlighted
         )
         all_lorries = []
         for highway in content_highways:
-            url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry?field"
+            url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry"
             lorries = (
                 super()
                 .api_requests(url)
@@ -259,8 +263,7 @@ The template method pattern offers both benefits and drawbacks:
   New behaviors can be introduced by subclassing without altering the existing template, adhering to the open-closed principle [@McDonough2017, p. 249].
 - *Consistency*\
   Enforces a standardized process flow, enhancing readability and maintainability [@McDonough2017, pp. 250-251].
-- *Reduced Duplication*\
-  Minimizes repeated code by encapsulating shared behavior in the abstract base class [@McDonough2017, pp. 247-248].
+- *Reduced Duplication*: Centralizes common logic, eliminating repetitive code [@sourcemaking-template-method].
 
 == *Disadvantages*
 - *Inheritance Dependency*\
@@ -270,15 +273,31 @@ The template method pattern offers both benefits and drawbacks:
 - *Global Impact of Changes*\
   Modifications in the base class can inadvertently propagate to all subclasses, introducing potential bugs [@McDonough2017, p. 253].
 
-= Differentiation to Other Patterns
 
-While the template method shares similarities with other design patterns, its unique characteristics set it apart:
+= Differentiation from Other Patterns
 
-1. *Strategy Pattern*\
-   The Strategy pattern encapsulates algorithms as interchangeable objects, offering runtime flexibility. In contrast, the template method fixes the algorithm's structure at compile time, delegating specific steps to subclasses [@McDonough2017, pp. 250-251].
+The Template Method is often compared to other patterns due to its structural similarities. However, key distinctions highlight its unique role.
 
-2. *Factory Method*\
-   Both patterns rely on abstract methods, but their goals differ: the Factory Method creates objects, while the template method defines an algorithmic workflow [@McDonough2017, pp. 249-250].
+- *Strategy Pattern*
+  - *Purpose*: Encapsulates algorithms as interchangeable objects for runtime flexibility.
+  - *Difference*: Strategy replaces an entire algorithm dynamically, while Template Method fixes the overall structure and allows variation only in specific steps.
+  - *Example*: A payment processor might use Strategy to switch between credit card and PayPal payments, while Template Method standardizes the sequence of authorization, processing, and logging [@gamma1993design, p. 412].
+
+- *Factory Method*
+  - *Purpose*: Defines a method for creating objects, letting subclasses specify the object type.
+  - *Difference*: Factory Method focuses on object creation, whereas Template Method defines an algorithm's structure.
+  - *Example*: A factory may decide between creating a `Car` or `Truck`, while Template Method standardizes the assembly sequence (e.g., engine installation, wheel attachment) [@McDonough2017, pp. 249-250].
+
+- *State Pattern*
+  - *Purpose*: Encapsulates state-based behavior, allowing objects to change behavior dynamically as their state changes.
+  - *Difference*: State modifies behavior based on an object's internal state, whereas Template Method enforces a fixed sequence of steps with variation points.
+  - *Example*: A vending machine uses State to handle coin insertion, selection, and dispensing, while Template Method enforces a consistent transaction workflow [@gamma1993design, p. 412].
+
+- *Decorator Pattern*
+  - *Purpose*: Dynamically adds responsibilities to objects without altering their structure.
+  - *Difference*: Decorator enhances object behavior at runtime, while Template Method defines a standardized algorithm structure.
+  - *Example*: A text editor might use Decorator to add spell-checking or formatting features dynamically, while Template Method enforces a consistent pipeline (e.g., load file, edit, save) [@gamma1993design, p. 412].
+
 
 = Outlook
 
