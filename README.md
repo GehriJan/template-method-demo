@@ -9,4 +9,4 @@ The project can be setup by the following steps (using Python3.13.0):
 3. `pip install -r requirements.txt`
 
 ## Documentation
-For further documentation and explanation, see `doc/main.typ`
+For further documentation and explanation, see `template_method_design_pattern.pdf`.
