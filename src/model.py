@@ -141,45 +141,45 @@ class DogVisualize(ApiVisualize):
 
 class AutobahnVisualize(ApiVisualize):
     """
-    Example of visualizing different Autobahn-lorries and colorcoding them according to their corresponding Autobahn.
+    Example of visualizing different highway truck parks and colorcoding them according to their corresponding Autobahn.
     """
     def get_api_url(self):
         return "https://api.deutschland-api.dev/autobahn"
 
     def process_content(self, content):
         """Transform API response to pandas dataframe and prepare data for visualization."""
-        all_autobahns_lorries_df: pd.DataFrame = pd.DataFrame()
+        all_autobahns_truck_parks_df: pd.DataFrame = pd.DataFrame()
         for highway in content:
             highway_df = pd.json_normalize(highway)
-            all_autobahns_lorries_df = pd.concat([all_autobahns_lorries_df, highway_df], axis=0)
-        all_autobahns_lorries_df[["Autobahn", "city"]] = (
-            all_autobahns_lorries_df
+            all_autobahns_truck_parks_df = pd.concat([all_autobahns_truck_parks_df, highway_df], axis=0)
+        all_autobahns_truck_parks_df[["Autobahn", "city"]] = (
+            all_autobahns_truck_parks_df
             ["title"]
             .str.split(" \\| ", n=1, expand=True)
         )
-        all_autobahns_lorries_df = all_autobahns_lorries_df.drop(columns=["title", "id"])
-        return all_autobahns_lorries_df
+        all_autobahns_truck_parks_df = all_autobahns_truck_parks_df.drop(columns=["title", "id"])
+        return all_autobahns_truck_parks_df
 
     def api_requests(self, api_url):
-        """Request highway names, then request lorries for individual highways."""
+        """Request highway names, then request truck parks for individual highways."""
         content_highways = (
             super()
             .api_requests(api_url)
             ["entries"][:10]
         )
-        all_lorries = []
+        all_truck_parks = []
         for highway in content_highways:
             url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry"
-            lorries = (
+            truck_parks = (
                 super()
                 .api_requests(url)
                 ["entries"]
             )
-            all_lorries.append(lorries)
-        return all_lorries
+            all_truck_parks.append(truck_parks)
+        return all_truck_parks
 
     def visualize_data(self, data):
-        """Visualize the highway lorries as a plotly map-chart."""
+        """Visualize the highway truck parks as a plotly map-chart."""
         fig = px.scatter_geo(
             data,
             lat="coordinate.lat",

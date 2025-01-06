@@ -14,7 +14,7 @@
   abstract: [
     Oftentimes in modern software projects, the same procedure has to be performed in differing contexts.
     Considering every context by using control structures makes the code less readable, maintainable and scalable.
-    #acr("TMDP") solves this problem by introducing an abstract class which contains the template method, a high-level algorithm solving the problem on a general level. The different parts of the algorithm are implemented for the different context, ensuring flexibility _and_ scalability.
+    #acr("TMDP") solves this problem by introducing an abstract class which contains the template method, a high-level algorithm solving the problem on a general level. The different parts of the algorithm are implemented for the different contexts, ensuring flexibility _and_ scalability.
     To showcase #acr("TMDP"), we implemented a Python program with an abstract class and 3 concrete classes. All of them implement a fetch-process-visualize procedure.
     At last, we elaborate on advantages and disadvantages of #acr("TMDP") and refer to related software design patterns.
   ],
@@ -64,7 +64,7 @@ Then, at minimum all required functions declared in the abstract class have to b
 == Different types of abstract steps
 
 
-One differentiates between different types of methods in the template method. The number of different types of methods and the naming varies (@wikipedia and @McDonough2017 count 2, @refactoring_guru and @cooper2000java 3), but the underlying concepts of _abstraction_ and _default implementation_. We count three types of abstract steps in the template method [@refactoring_guru]:
+One differentiates between different types of methods in the template method. The number of different types of methods and the naming varies (@wikipedia and @McDonough2017 count 2, @refactoring_guru and @cooper2000java 3), but the underlying concepts of _abstraction_ and _default implementation_ stay the same. We count three types of abstract steps in the template method @refactoring_guru:
 
 1. *Required abstract steps*\
   These steps are defined as abstract methods in the abstract class. Therefore, they have to be implemented by every concrete class, otherwise the template method cannot be performed.
@@ -100,11 +100,11 @@ For showcasing #acr("TMDP"), a context had to be chosen which fits the situation
 
 1. *`CryptoVisualize` - Price of Bitcoin*\
   The price of the wide-spread crypto currency Bitcoin is retrieved for every day since the first of July 2024. The data is then being transformed and visualized as a plotly line-chart.
-2. *`DogVisualize` - Picture of Dog*\
+2. *`DogVisualize` - Picture of dog*\
   A random picture of a dog is being fetched and displayed.
-3. *`AutobahnVisualize` - German Highway lorries*\
-  Informations regarding different lorries of the notorious german highways ('Autobahn') are fetched.
-  Then, the lorries are displayed on a plotly map-chart. They are color-coded according to the highway they belong to, which allows the retracing of individual highways.
+3. *`AutobahnVisualize` - German highway truck parks*\
+  Informations regarding different truck parks of the notorious german highways ('Autobahn') are fetched.
+  Then, the truck parks are displayed on a plotly map-chart. They are color-coded according to the highway they belong to, which allows the retracing of individual highways.
 
 == Project Setup
 For implementing #acr("TMDP") we used the programming language Python (version 3.13.0). Python is easy to read and allows to focus on the main concepts of this demonstration. The module `abc` (Abstract Base Classes) provides the necessary classes/decorators for implementing #acr("TMDP").
@@ -217,26 +217,28 @@ It is implemented as a normal function with an empty body:
 )
 
 == Further concepts of #acr("TMDP") in the example
-The implementation of `api_requests` in `AutobahnVisualize` is to be highlighted, because it is the only class overwriting the default implementation. This is due to the fact, that the first API request only returns the names of the highways and not the lorries itself. The default implementation is rather general, which is why `AutobahnVisualize.api_requests()` can refer to it when making requests. This approach adapts to the API endpoints whilst still ensuring a standardized handling of API(-error)s:
+The implementation of `api_requests` in `AutobahnVisualize` is to be highlighted, because it is the only class overwriting the default implementation. This is due to the fact, that the first API request only returns the names of the highways and not the truck parks themselves. The default implementation is rather general, which is why `AutobahnVisualize.api_requests()` can refer to it when making requests. This approach adapts to the API endpoints whilst still ensuring a standardized handling of API(-error)s:
 
 #figure(
   ```python
     def api_requests(self, api_url):
+        """Request highway names, then request truck parks for individual highways."""
         content_highways = (
             super()
             .api_requests(api_url)
             ["entries"][:10]
         )
-        all_lorries = []
+        all_truck_parks = []
         for highway in content_highways:
             url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry"
-            lorries = (
+            truck_parks = (
                 super()
                 .api_requests(url)
                 ["entries"]
             )
-            all_lorries.append(lorries)
-        return all_lorries
+            all_truck_parks.append(truck_parks)
+        return all_truck_parks
+
   ```,
   caption: [The overwritten version of `api_requests` in `AutobahnVisualize`.]
 )
@@ -247,7 +249,7 @@ The implementation of `api_requests` in `AutobahnVisualize` is to be highlighted
    JUnit uses template method principles to enforce a structured flow in test execution. Methods such as `setUp()` and `tearDown()` serve as hooks, while `executeTest()` is a required step for specific test logic.
 
 2. *Game Development (Unreal Engine)*\
-   In Unreal Engine, the `Actor` class exemplifies the template method pattern. Hooks such as `BeginPlay()` and `Tick()` allow developers to inject custom logic while adhering to the engine's game loop.
+   In Unreal Engine, the `Actor` class exemplifies the template method pattern. Methods such as `BeginPlay()` and `Tick()` allow developers to inject custom logic while adhering to the engine's game loop.
 
 3. *Oatmeal Preparation (Non-programming)*\
    @McDonough2017 provides an analogy of oatmeal preparation, illustrating how a fixed sequence of steps (gather ingredients, prepare, cook, and serve) can have flexibility in implementation depending on factors like the type of oatmeal and the cooking method (e.g., stovetop or microwave). This mirrors the template method's ability to define an overarching structure while allowing subclasses to handle details [@McDonough2017, pp. 247-251].
