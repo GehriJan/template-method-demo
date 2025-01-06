@@ -152,11 +152,19 @@ class AutobahnVisualize(ApiVisualize):
         return all_autobahns_lorries_df
 
     def api_requests(self, api_url):
-        content_highways = super().api_requests(api_url)
+        content_highways = (
+            super()
+            .api_requests(api_url)
+            ["entries"][:10]
+        )
         all_lorries = []
-        for highway in content_highways["entries"][:10]:
+        for highway in content_highways:
             url = f"https://api.deutschland-api.dev/autobahn/{highway}/parking_lorry?field"
-            lorries = super().api_requests(url)["entries"]
+            lorries = (
+                super()
+                .api_requests(url)
+                ["entries"]
+            )
             all_lorries.append(lorries)
         return all_lorries
 
