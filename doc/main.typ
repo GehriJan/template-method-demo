@@ -109,6 +109,11 @@ The project is structured in three folders:
 - `tests` contains the tests
 - `doc` contains the files for this documentation.
 
+The project can be setup by the following steps:
+1. `sh python3 -m venv .venv`
+2. `sh source .venv/bin/activate`
+3. `sh pip install -r requirements.txt`
+
 == Usage
 
 To execute the program, run `src/main.py`.
