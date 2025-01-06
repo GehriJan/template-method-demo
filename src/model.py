@@ -89,11 +89,6 @@ class CryptoVisualize(ApiVisualize):
     def print_report(self, df):
         """Print different metrics of the bitcoin data."""
         price_stats = df["price"].describe()
-        date_stats = (
-            pd.to_datetime(df["time"])
-            .dt.floor("D")
-            .describe()
-        )
         metrics = {
             "Number of data points": price_stats["count"],
             "Price stats": None,
@@ -101,9 +96,6 @@ class CryptoVisualize(ApiVisualize):
             "\tMaximum": price_stats.loc["max"],
             "\tMean": price_stats.loc["mean"],
             "\tStd": price_stats.loc["std"],
-            "Date stats": None,
-            "\tEarliest date": date_stats.loc["min"],
-            "\tLatest date": date_stats.loc["max"],
         }
         print("-----------------------")
         print("Report for crypto data:")
