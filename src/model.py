@@ -61,6 +61,7 @@ class CryptoVisualize(ApiVisualize):
         return "https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2024-07-01&interval=1d"
 
     def process_content(self, content):
+        """Transform API response to pandas df."""
         df = pd.DataFrame(
             dict(
                 time=self.dict_list_to_value_list(content, "timestamp"),
@@ -70,6 +71,7 @@ class CryptoVisualize(ApiVisualize):
         return df
 
     def visualize_data(self, data) -> None:
+        """Create plotly line-chart out of bitcoin data."""
         fig = px.line(
             data,
             x="time",
@@ -85,6 +87,7 @@ class CryptoVisualize(ApiVisualize):
         return
 
     def print_report(self, df):
+        """Print different metrics of the bitcoin data."""
         price_stats = df["price"].describe()
         date_stats = (
             pd.to_datetime(df["time"])
@@ -109,6 +112,7 @@ class CryptoVisualize(ApiVisualize):
         print("-----------------------")
 
     def dict_list_to_value_list(self, dictList: list[dict], key: str):
+        """Transform a list of dictionaries to a list of values of a specified key in those dictionaries."""
         valueList: list = []
         for dictionary in dictList:
             value = dictionary[key]
@@ -124,14 +128,15 @@ class DogVisualize(ApiVisualize):
         return "https://dog.ceo/api/breeds/image/random"
 
     def process_content(self, content):
+        """Transform API response to image data"""
         picture_url = content["message"]
         data = rq.get(picture_url).content
         return data
 
     def visualize_data(self, data):
+        """Display the image"""
         image = Image.open(BytesIO(data))
         image.show()
-        return
 
 
 class AutobahnVisualize(ApiVisualize):
@@ -142,6 +147,7 @@ class AutobahnVisualize(ApiVisualize):
         return "https://api.deutschland-api.dev/autobahn"
 
     def process_content(self, content):
+        """Transform API response to pandas dataframe and prepare data for visualization."""
         all_autobahns_lorries_df: pd.DataFrame = pd.DataFrame()
         for highway in content:
             highway_df = pd.json_normalize(highway)
@@ -155,6 +161,7 @@ class AutobahnVisualize(ApiVisualize):
         return all_autobahns_lorries_df
 
     def api_requests(self, api_url):
+        """Request highway names, then request lorries for individual highways."""
         content_highways = (
             super()
             .api_requests(api_url)
@@ -172,6 +179,7 @@ class AutobahnVisualize(ApiVisualize):
         return all_lorries
 
     def visualize_data(self, data):
+        """Visualize the highway lorries as a plotly map-chart."""
         fig = px.scatter_geo(
             data,
             lat="coordinate.lat",
