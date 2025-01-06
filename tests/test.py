@@ -1,8 +1,9 @@
 import pytest
+import shutil
 import pandas as pd
 import requests as rq
 import validators
-from model_test_sample_data import crypto_sample_data, dog_sample_data, autobahn_sample_data
+from test_sample_data import crypto_sample_data, dog_sample_data, autobahn_sample_data
 
 
 import os
@@ -25,7 +26,7 @@ class TestClass:
         # Arrange
         visualization_object: ApiVisualize = visualization_class()
         # Act
-        api_url = visualization_object.getApiUrl()
+        api_url = visualization_object.get_api_url()
         # Assert
         assert type(api_url) == str
         assert validators.url(api_url)
@@ -34,7 +35,7 @@ class TestClass:
         # Arrange
         visualization_object: ApiVisualize = visualization_class()
         visualization_object: ApiVisualize = visualization_class()
-        api_url = visualization_object.getApiUrl()
+        api_url = visualization_object.get_api_url()
         # Act
         res = rq.get(api_url)
         # Assert
@@ -45,9 +46,7 @@ class TestClass:
         # Arrange
         visualization_object: ApiVisualize = visualization_class()
         # Act
-        processed_data = visualization_object.processContent(sample_data)
+        processed_data = visualization_object.process_content(sample_data)
         # Assert
         assert processed_data is not None
         assert type(processed_data) in [pd.DataFrame, bytes]
-
-# TODO: tests für andere funktionen weiter schreiben

@@ -1,3 +1,4 @@
+import json
 from io import BytesIO
 from abc import ABC, abstractmethod
 from PIL import Image
@@ -145,9 +146,11 @@ class AutobahnVisualize(ApiVisualize):
         for highway in content:
             highway_df = pd.json_normalize(highway)
             all_autobahns_lorries_df = pd.concat([all_autobahns_lorries_df, highway_df], axis=0)
-        all_autobahns_lorries_df[["Autobahn", "city"]] = all_autobahns_lorries_df[
-            "title"
-        ].str.split(" \| ", n=1, expand=True)
+        all_autobahns_lorries_df[["Autobahn", "city"]] = (
+            all_autobahns_lorries_df
+            ["title"]
+            .str.split(" \\| ", n=1, expand=True)
+        )
         all_autobahns_lorries_df = all_autobahns_lorries_df.drop(columns=["title", "id"])
         return all_autobahns_lorries_df
 

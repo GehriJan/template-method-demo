@@ -146,6 +146,12 @@ Example outputs with their corresponding commands are presented subsequently.
 )
 === Tests
 
+Tests of the program have been written using the python package `pytest`.
+They can be found in `tests/test.py` and run by
+#figure(
+  ```sh pytest tests/test.py -v```
+)
+.
 
 == The #acr("TMDP") in the example
 === Template Method
